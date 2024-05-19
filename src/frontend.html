@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>This is a title</title>
+</head>
+
+<body>
+    <div style="display: flex; flex-direction: column;">
+        <h1>Hola Rodo, acá vas a elegir el tipo de canary token (por favor no intentes hackear la página)</h1>
+        <select id="tokenSelector">
+            <option>pdf</option>
+            <option>excel</option>
+            <option>word</option>
+            <option>epub</option>
+            <option>mysql</option>
+        </select>
+
+        <div style="display: flex;">
+            <span>Contenido del token: </span>
+            <input id="tokenContent" />
+        </div>
+
+        <button onclick="generar()">Generame el token tiger</button>
+    </div>
+</body>
+<script>
+    function generar() {
+        const select = document.getElementById("tokenSelector")
+        const input = document.getElementById("tokenContent")
+        fetch("/nuevoToken", {
+            method: "post",
+            body: JSON.stringify({ tipo: select.value, contenido: input.value }),
+            headers: {
+                "Content-Type": "application/json",
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        }).then(res => res.text()).then(console.log)
+    }
+
+    const evtSource = new EventSource("listen");
+    evtSource.onmessage = (e) => {
+        alert(e.data)
+    };
+</script>
+
+</html>
