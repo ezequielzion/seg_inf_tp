@@ -36,13 +36,46 @@
                 "Content-Type": "application/json",
                 // 'Content-Type': 'application/x-www-form-urlencoded',
             },
-        }).then(res => res.text()).then(console.log)
+        }).then(resp => resp.status === 200 ? resp.blob() : Promise.reject('something went wrong'))
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                // the filename you want
+                a.download = `canary-token.${getExt(select.value)}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(() => alert('oh no!'));
     }
 
     const evtSource = new EventSource("listen");
     evtSource.onmessage = (e) => {
-        alert(e.data)
+        alert("se activó el token con el siguiente contenido: \n\n" + e.data)
     };
+
+    function getExt(tipo) {
+        switch (tipo) {
+            case 'epub':
+            case 'pdf':
+                return tipo
+                break;
+            case 'word':
+                return 'doc'//?
+                break;
+            case 'excel':
+                return 'xlsx'
+                break;
+            case 'mysql':
+                return 'txt'//?
+                break;
+            default:
+                throw new Error('no hackees la pagina')
+                break;
+        }
+    }
 </script>
 
 </html>
