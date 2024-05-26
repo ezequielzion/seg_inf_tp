@@ -63,7 +63,7 @@ def nuevo_token():
     return generadores[tipo](endpoint)
 
 
-@app.route("/listen", methods=["GET"])
+@app.get("/listen")
 def listen():
     def stream():
         messages = announcer.listen()  # returns a queue.Queue
@@ -86,13 +86,16 @@ def alert(id: uuid):
             parts = line.split("\t")
             if parts[0] == id_str:
                 contenido = parts[1]
+                if not contenido:
+                    contenido = ""
                 break
 
     if contenido == None:
         # alertar al admin o a alguien que se intento llamar al alert con un id falso, alguien descubrio el endpoint
         pass
-
-    announcer.announce(contenido)
+    else: 
+        announcer.announce(contenido)
+        
     return ("informa3", 200)
 
 
