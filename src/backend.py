@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, render_template
 import queue
 from generadores import generadores
 import uuid
@@ -46,8 +46,7 @@ app = Flask(__name__)
 
 @app.get("/")
 def hello_world():
-    with open("frontend.html", "r+") as f:
-        return f.read()
+    return render_template('frontend.html')
 
 
 @app.post("/nuevoToken")

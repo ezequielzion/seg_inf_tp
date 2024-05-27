@@ -3,35 +3,41 @@
 
 <head>
     <meta charset="utf-8">
-    <title>This is a title</title>
-</head>
-
+    <title>Honeytoken Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
+    <link rel="icon" href="{{ url_for('static', filename='honey.ico') }}">
 <body>
-    <div style="display: flex; flex-direction: column;">
-        <h1>Hola Rodo, acá vas a elegir el tipo de canary token (por favor no intentes hackear la página)</h1>
-        <select id="tokenSelector">
-            <option>pdf</option>
-            <option>excel</option>
-            <option>word</option>
-            <option>epub</option>
-            <option>mysql</option>
-        </select>
-
-        <div style="display: flex;">
-            <span>Contenido del token: </span>
-            <input id="tokenContent" />
+    <main class="root">
+        <div id="saludo">
+            <h1>Hola Rodo!</h1>
+            <p id="no-hacking-please">(por favor no intentes hackear la página)</p>
         </div>
-
-        <button onclick="generar()">Generame el token tiger</button>
-    </div>
+        
+        <div class="token-generator">
+            <h3>Acá vas a elegir el tipo de canary token:</h3>
+            <select id="tokenSelector">
+                <option>pdf</option>
+                <option>excel</option>
+                <option>word</option>
+                <option>epub</option>
+                <option>mysql</option>
+            </select>
+    
+            <h3>Contenido del token:</h3>
+            <textarea id="tokenContent"></textarea>
+    
+            <button onclick="generar()">Generame el token tiger</button>
+        </div>
+    </main>
 </body>
 <script>
     function generar() {
         const select = document.getElementById("tokenSelector")
-        const input = document.getElementById("tokenContent")
+        const textarea = document.getElementById("tokenContent")
+        
         fetch("/nuevoToken", {
             method: "post",
-            body: JSON.stringify({ tipo: select.value, contenido: input.value }),
+            body: JSON.stringify({ tipo: select.value, contenido: textarea.value }),
             headers: {
                 "Content-Type": "application/json",
                 // 'Content-Type': 'application/x-www-form-urlencoded',
@@ -40,20 +46,21 @@
             .then(blob => {
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
+                const fileExt = getExt(select.value);
                 a.style.display = 'none';
                 a.href = url;
                 // the filename you want
-                a.download = `canary-token.${getExt(select.value)}`;
+                a.download = `canary-token.${fileExt}`;
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
             })
-            .catch(() => alert('oh no!'));
+            .catch(() => alert('Oh no!'));
     }
 
     const evtSource = new EventSource("listen");
     evtSource.onmessage = (e) => {
-        alert("se activó el token con el siguiente contenido: \n\n" + e.data)
+        alert("Se activó el token con el siguiente contenido: \n\n" + e.data)
     };
 
     function getExt(tipo) {
