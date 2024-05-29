@@ -1,5 +1,43 @@
 import zipfile
 import io
+import qrcode
+import requests
+
+def get_ngrok_url():
+    try:
+        res = requests.get("http://localhost:4040/api/tunnels")
+        res_dict = res.json()
+        return res_dict['tunnels'][0]['public_url']
+    except:
+        return None
+
+def generador_pdf(endpoint: str):
+    pass
+def generador_excel(endpoint: str):
+    pass
+def generador_word(endpoint: str):
+    pass
+def generador_mysql(endpoint: str):
+    pass
+def generador_qr(endpoint: str):
+    ngrok_url = get_ngrok_url()
+    ngrok_url = ngrok_url if ngrok_url else endpoint
+    exactas_url = 'https://campus.exactas.uba.ar/'
+    
+    url = f"{ngrok_url}/redirect?final_url={exactas_url}"
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    png_buffer = io.BytesIO()
+    img.save(png_buffer, 'PNG')
+    png_buffer.seek(0)
+    return png_buffer.getvalue()
 
 def generador_epub(endpoint: str):
     # Create a new ZIP file in memory
@@ -84,21 +122,11 @@ def generador_epub(endpoint: str):
         zipf.writestr("OEBPS/text.xhtml", text)
     return epub_buffer.getvalue()
 
-def generador_pdf(endpoint: str):
-    pass
-def generador_excel(endpoint: str):
-    pass
-def generador_word(endpoint: str):
-    pass
-def generador_mysql(endpoint: str):
-    pass
-
-
-
 generadores = {
     "pdf": generador_pdf,
     "excel": generador_excel,
     "word": generador_word,
     "epub": generador_epub,
     "mysql": generador_mysql,
+    "qr": generador_qr
 }

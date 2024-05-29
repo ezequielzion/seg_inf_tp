@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, render_template
+from flask import Flask, request, make_response, render_template, redirect
 import queue
 from generadores import generadores
 import uuid
@@ -97,6 +97,11 @@ def alert(id: uuid):
         
     return ("informa3", 200)
 
+@app.route('/redirect')
+def redirect_route():
+    final_url = request.args.get('final_url')
+    response = redirect(final_url, code=302)
+    return response
 
 if __name__ == "__main__":
 	port = int(os.environ.get('PORT', 5000))

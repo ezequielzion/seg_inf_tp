@@ -21,6 +21,7 @@
                 <option>word</option>
                 <option>epub</option>
                 <option>mysql</option>
+                <option>qr</option>
             </select>
     
             <h3>Contenido del token:</h3>
@@ -78,6 +79,8 @@
             case 'mysql':
                 return 'txt'//?
                 break;
+            case 'qr':
+                return 'png'
             default:
                 throw new Error('no hackees la pagina')
                 break;
