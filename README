@@ -1,1 +1,2 @@
-Holis
+1. Posicionarse en la carpeta `src` y correr python3
+2. En otra terminal, correr `ngrok http 5000`
