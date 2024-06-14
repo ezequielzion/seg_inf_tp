@@ -3,6 +3,7 @@ import queue
 from generadores import generadores
 import uuid
 import os
+from markupsafe import escape
 
 class MessageAnnouncer:
 
@@ -23,15 +24,14 @@ class MessageAnnouncer:
 
 
 def sanitizar_contenido(contenido: str) -> str:
-    # implementar!!!!
     # quizas esto ayude https://flask.palletsprojects.com/en/3.0.x/quickstart/#html-escaping
-    return contenido
+    return escape(contenido)
 
 
 def persistir_token(contenido: str) -> str:
     id = str(uuid.uuid4())
     with open("tokens-generados.txt", "a") as f:
-        f.write(id + "\t" + contenido)
+        f.write(id + "\t" + contenido + "\n")
     return id
 
 

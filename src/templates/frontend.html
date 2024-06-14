@@ -4,15 +4,17 @@
 <head>
     <meta charset="utf-8">
     <title>Honeytoken Generator</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
-    <link rel="icon" href="{{ url_for('static', filename='honey.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<link rel="icon" href="{{ url_for('static', filename='honey.ico') }}">
+
 <body>
     <main class="root">
         <div id="saludo">
             <h1>Hola Rodo!</h1>
             <p id="no-hacking-please">(por favor no intentes hackear la página)</p>
         </div>
-        
+
         <div class="token-generator">
             <h3>Acá vas a elegir el tipo de canary token:</h3>
             <select id="tokenSelector">
@@ -23,10 +25,10 @@
                 <option>mysql</option>
                 <option>qr</option>
             </select>
-    
+
             <h3>Contenido del token:</h3>
             <textarea id="tokenContent"></textarea>
-    
+
             <button onclick="generar()">Generame el token tiger</button>
         </div>
     </main>
@@ -35,7 +37,7 @@
     function generar() {
         const select = document.getElementById("tokenSelector")
         const textarea = document.getElementById("tokenContent")
-        
+
         fetch("/nuevoToken", {
             method: "post",
             body: JSON.stringify({ tipo: select.value, contenido: textarea.value }),
@@ -69,21 +71,16 @@
             case 'epub':
             case 'pdf':
                 return tipo
-                break;
             case 'word':
-                return 'doc'//?
-                break;
+                return 'docx'
             case 'excel':
                 return 'xlsx'
-                break;
             case 'mysql':
                 return 'txt'//?
-                break;
             case 'qr':
                 return 'png'
             default:
                 throw new Error('no hackees la pagina')
-                break;
         }
     }
 </script>

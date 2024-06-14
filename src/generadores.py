@@ -2,7 +2,65 @@ import zipfile
 import io
 import qrcode
 import requests
+import openpyxl
+from openpyxl.writer.excel import ExcelWriter
+from docx.opc.constants import RELATIONSHIP_TYPE
+from docx.oxml import CT_Inline, parse_xml, CT_Picture
+from docx.shape import InlineShape
+from docx.shared import Length
+from docx.text.run import Run
+from docx import Document
 
+
+def add_linked_pic(r: Run, image_path: str) -> InlineShape:
+    """
+    Image will be inserted as character without embedding, just as link.
+    :param r: run
+    :param image_path:
+        Seems like it has to be absolute path.as_uri() like "file:///full/path/file.jpg".
+        It seems that it also works with relative path like "./folder/image.jpg"
+    :return:
+    """
+
+    # create RELATION.
+    relations = r.part.rels
+    rel_id = relations._next_rId
+    relations.add_relationship(reltype=RELATIONSHIP_TYPE.IMAGE, target=image_path, rId=rel_id, is_external=True)
+
+    # Comment about pic_id from python-docx creators:
+    # -- Word doesn't seem to use this, but does not omit it
+    pic_id = 0
+
+    # Next code taken from this method:
+    # def new(cls, pic_id, filename, rId, cx, cy):
+    # Just one line changed in order to replace `r:embed` with `r:link`.
+
+    # The following lines were created to make variable names same as in python-docx method.
+    filename = image_path  # Filename - something useless. will make it equal to image_path
+    cx = 1
+    cy = 1
+
+    # Expand that code as CT_Picture.new(pic_id, filename, rId, cx, cy):
+    pic = parse_xml(CT_Picture._pic_xml())
+    pic.nvPicPr.cNvPr.id = pic_id
+    pic.nvPicPr.cNvPr.name = filename
+
+    # pic.blipFill.blip.embed = rId  # This line is replaced with next one
+    pic.blipFill.blip.link = rel_id
+
+    pic.spPr.cx = cx
+    pic.spPr.cy = cy
+
+    shape_id = r.part.next_id
+
+    # Now from here: inline = cls.new(cx, cy, shape_id, pic)
+    inline = CT_Inline.new(cx, cy, shape_id, pic)
+    r._r.add_drawing(inline)
+
+    # For embedding image there is get_or_add_image_part method.
+    # We don't need it here.
+
+    return InlineShape(inline)
 def get_ngrok_url():
     try:
         res = requests.get("http://localhost:4040/api/tunnels")
@@ -14,9 +72,26 @@ def get_ngrok_url():
 def generador_pdf(endpoint: str):
     pass
 def generador_excel(endpoint: str):
-    pass
+    wb_nuevo = openpyxl.Workbook()
+    sheet = wb_nuevo.active
+    sheet.cell(column=1, row=1, value=f'=webservice("{endpoint}")')
+    excel_buffer = io.BytesIO()
+    archive = zipfile.ZipFile(excel_buffer, 'w', zipfile.ZIP_DEFLATED, allowZip64=True)
+    writer = ExcelWriter(wb_nuevo, archive)
+    writer.save()
+    return excel_buffer.getvalue()
+
 def generador_word(endpoint: str):
-    pass
+    document = Document()
+    document.add_heading('Document Title', 0)
+
+    p = document.add_paragraph('A plain paragraph having some ')
+    run = p.add_run('bold')
+    add_linked_pic(run, endpoint)
+    word_buffer = io.BytesIO()
+    document.save(word_buffer)
+    return word_buffer.getvalue()
+
 def generador_mysql(endpoint: str):
     pass
 def generador_qr(endpoint: str):
