@@ -1,5 +1,7 @@
 import zipfile
 import io
+import os
+import shutil
 import qrcode
 import requests
 import openpyxl
@@ -10,7 +12,26 @@ from docx.shape import InlineShape
 from docx.shared import Length
 from docx.text.run import Run
 from docx import Document
+import subprocess
+import os.path
 
+
+def generador_exec(endpoint: str):
+    with open("tmp\ejecutable-jugoso.py", "w" if os.path.isfile("tmp\ejecutable-jugoso.py") else "x") as f:
+        f.write(f'import requests\nrequests.get("{endpoint}")')
+    try:
+        res = subprocess.run(["pyinstaller", "tmp\ejecutable-jugoso.py", "--onefile"], shell=True)
+    except BaseException as e:
+        print(e)
+
+    res = None
+    with open("dist\ejecutable-jugoso.exe", mode='rb') as file:
+        res = file.read()
+    os.remove("tmp\ejecutable-jugoso.py")
+    os.remove("dist\ejecutable-jugoso.exe")
+    os.remove("ejecutable-jugoso.spec")
+    shutil.rmtree("build")
+    return res
 
 def add_linked_pic(r: Run, image_path: str) -> InlineShape:
     """
@@ -69,8 +90,7 @@ def get_ngrok_url():
     except:
         return None
 
-def generador_pdf(endpoint: str):
-    pass
+
 def generador_excel(endpoint: str):
     wb_nuevo = openpyxl.Workbook()
     sheet = wb_nuevo.active
@@ -92,8 +112,6 @@ def generador_word(endpoint: str):
     document.save(word_buffer)
     return word_buffer.getvalue()
 
-def generador_mysql(endpoint: str):
-    pass
 def generador_qr(endpoint: str):
     ngrok_url = get_ngrok_url()
     ngrok_url = ngrok_url if ngrok_url else endpoint
@@ -198,10 +216,9 @@ def generador_epub(endpoint: str):
     return epub_buffer.getvalue()
 
 generadores = {
-    "pdf": generador_pdf,
+    "executable": generador_exec,
     "excel": generador_excel,
     "word": generador_word,
     "epub": generador_epub,
-    "mysql": generador_mysql,
     "qr": generador_qr
 }

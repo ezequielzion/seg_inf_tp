@@ -18,11 +18,10 @@
         <div class="token-generator">
             <h3>Acá vas a elegir el tipo de canary token:</h3>
             <select id="tokenSelector">
-                <option>pdf</option>
+                <option>executable</option>
                 <option>excel</option>
                 <option>word</option>
                 <option>epub</option>
-                <option>mysql</option>
                 <option>qr</option>
             </select>
 
@@ -37,6 +36,7 @@
     function generar() {
         const select = document.getElementById("tokenSelector")
         const textarea = document.getElementById("tokenContent")
+        document.body.style.cursor = "progress"
 
         fetch("/nuevoToken", {
             method: "post",
@@ -53,12 +53,16 @@
                 a.style.display = 'none';
                 a.href = url;
                 // the filename you want
-                a.download = `canary-token.${fileExt}`;
+                a.download = `canary-token${fileExt}`;
                 document.body.appendChild(a);
+                document.body.style.cursor = ""
                 a.click();
                 window.URL.revokeObjectURL(url);
             })
-            .catch(() => alert('Oh no!'));
+            .catch(e => {
+                console.error(e);
+                alert('Oh no!')
+            });
     }
 
     const evtSource = new EventSource("listen");
@@ -69,16 +73,15 @@
     function getExt(tipo) {
         switch (tipo) {
             case 'epub':
-            case 'pdf':
-                return tipo
+                return '.epub'
             case 'word':
-                return 'docx'
+                return '.docx'
             case 'excel':
-                return 'xlsx'
-            case 'mysql':
-                return 'txt'//?
+                return '.xlsx'
+            case 'executable':
+                return navigator.platform == "Win32" ? ".exe" : "" 
             case 'qr':
-                return 'png'
+                return '.png'
             default:
                 throw new Error('no hackees la pagina')
         }
