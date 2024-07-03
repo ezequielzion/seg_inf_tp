@@ -40,7 +40,7 @@
 
         fetch("/nuevoToken", {
             method: "post",
-            body: JSON.stringify({ tipo: select.value, contenido: textarea.value }),
+            body: JSON.stringify({ tipo: select.value, contenido: textarea.value, userAgentData: navigator.userAgent }),
             headers: {
                 "Content-Type": "application/json",
                 // 'Content-Type': 'application/x-www-form-urlencoded',

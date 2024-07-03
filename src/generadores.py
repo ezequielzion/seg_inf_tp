@@ -4,7 +4,6 @@ import os
 import shutil
 import qrcode
 import requests
-import platform 
 import openpyxl
 from openpyxl.writer.excel import ExcelWriter
 from docx.opc.constants import RELATIONSHIP_TYPE
@@ -17,9 +16,8 @@ import subprocess
 import os.path
 
 
-def generador_exec(endpoint: str):
-    os_name = platform.system()
-    is_using_windows = os_name == "Windows"
+def generador_exec(endpoint: str, userAgentData: str):
+    is_using_windows = "Windows" in userAgentData
     # s = separador
     s = "\\" if is_using_windows else "/"
     with open(f"tmp{s}ejecutable-jugoso.py", "w" if os.path.isfile(f"tmp{s}ejecutable-jugoso.py") else "x") as f:

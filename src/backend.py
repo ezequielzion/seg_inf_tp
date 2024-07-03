@@ -69,14 +69,16 @@ def hello_world():
 @app.post("/nuevoToken")
 def nuevo_token():
     body = request.get_json()
+    userAgentData = body["userAgentData"]
     tipo = body["tipo"]
+    contenido = body["contenido"]
     if tipo not in generadores:
         raise ValueError("el tipo de token no está soportado")
 
-    contenido = sanitizar_contenido(body["contenido"])
-    id = persistir_token(contenido)
+    contenido_sanitizado = sanitizar_contenido(contenido)
+    id = persistir_token(contenido_sanitizado)
     endpoint = generar_endpoint(id)
-    return generadores[tipo](endpoint)
+    return generadores[tipo](endpoint, userAgentData)
 
 
 @app.get("/listen")
