@@ -1,0 +1,7 @@
+flask
+qrcode
+markupsafe
+requests
+openpyxl
+python-docx
+pyinstaller

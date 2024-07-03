@@ -38,6 +38,23 @@ def persistir_token(contenido: str) -> str:
 def generar_endpoint(id: str) -> str:
     return f"http://localhost:5000/alert/{id}"
 
+def generate_alert_with_uuid(id: str):
+    print("generating alert", id)
+    with open("tokens-generados.txt", "r+") as f:
+        for line in f:
+            parts = line.split("\t")
+            if parts[0] == id:
+                contenido = parts[1]
+                if not contenido:
+                    contenido = ""
+                break
+
+    if contenido == None:
+        # alertar al admin o a alguien que se intento llamar al alert con un id falso, alguien descubrio el endpoint
+        pass
+    else: 
+        announcer.announce(contenido)
+
 
 announcer = MessageAnnouncer()
 
@@ -78,28 +95,15 @@ def listen():
 
 @app.get("/alert/<uuid:id>")
 def alert(id: uuid):
-    contenido = None
-    id_str = str(id)
-    with open("tokens-generados.txt", "r+") as f:
-        for line in f:
-            parts = line.split("\t")
-            if parts[0] == id_str:
-                contenido = parts[1]
-                if not contenido:
-                    contenido = ""
-                break
-
-    if contenido == None:
-        # alertar al admin o a alguien que se intento llamar al alert con un id falso, alguien descubrio el endpoint
-        pass
-    else: 
-        announcer.announce(contenido)
-        
+    uuid = str(id)
+    generate_alert_with_uuid(uuid)
     return ("informa3", 200)
 
 @app.route('/redirect')
 def redirect_route():
     final_url = request.args.get('final_url')
+    uuid = request.args.get('endpoint').split('/')[-1]
+    generate_alert_with_uuid(uuid)
     response = redirect(final_url, code=302)
     return response
 

@@ -4,6 +4,7 @@ import os
 import shutil
 import qrcode
 import requests
+import platform 
 import openpyxl
 from openpyxl.writer.excel import ExcelWriter
 from docx.opc.constants import RELATIONSHIP_TYPE
@@ -17,18 +18,23 @@ import os.path
 
 
 def generador_exec(endpoint: str):
-    with open("tmp\ejecutable-jugoso.py", "w" if os.path.isfile("tmp\ejecutable-jugoso.py") else "x") as f:
+    os_name = platform.system()
+    is_using_windows = os_name == "Windows"
+    # s = separador
+    s = "\\" if is_using_windows else "/"
+    with open(f"tmp{s}ejecutable-jugoso.py", "w" if os.path.isfile(f"tmp{s}ejecutable-jugoso.py") else "x") as f:
         f.write(f'import requests\nrequests.get("{endpoint}")')
     try:
-        res = subprocess.run(["pyinstaller", "tmp\ejecutable-jugoso.py", "--onefile"], shell=True)
+        subprocess.run(["pyinstaller", f"tmp{s}ejecutable-jugoso.py", "--onefile"], shell=False)
+        executable_path = f"dist{s}ejecutable-jugoso"
     except BaseException as e:
         print(e)
-
+    
     res = None
-    with open("dist\ejecutable-jugoso.exe", mode='rb') as file:
+    with open(f"dist{s}ejecutable-jugoso", mode='rb') as file:
         res = file.read()
-    os.remove("tmp\ejecutable-jugoso.py")
-    os.remove("dist\ejecutable-jugoso.exe")
+    os.remove(f"tmp{s}ejecutable-jugoso.py")
+    os.remove(f"dist{s}ejecutable-jugoso")
     os.remove("ejecutable-jugoso.spec")
     shutil.rmtree("build")
     return res
@@ -82,6 +88,7 @@ def add_linked_pic(r: Run, image_path: str) -> InlineShape:
     # We don't need it here.
 
     return InlineShape(inline)
+
 def get_ngrok_url():
     try:
         res = requests.get("http://localhost:4040/api/tunnels")
@@ -117,7 +124,7 @@ def generador_qr(endpoint: str):
     ngrok_url = ngrok_url if ngrok_url else endpoint
     exactas_url = 'https://campus.exactas.uba.ar/'
     
-    url = f"{ngrok_url}/redirect?final_url={exactas_url}"
+    url = f"{ngrok_url}/redirect?final_url={exactas_url}&endpoint={endpoint}"
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,

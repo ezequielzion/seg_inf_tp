@@ -1,2 +1,4 @@
-1. Posicionarse en la carpeta `src` y correr python3
-2. En otra terminal, correr `ngrok http 5000`
+1. Posicionarse en la carpeta `seg_inf_tp` e instalar las dependencias con el `requirements.txt`
+2. Posicionarse en la carpeta `seg_inf_tp/src` y correr `python3 backend.py`
+3. Instalar [ngrok](https://ngrok.com/)
+3. En otra terminal, correr `ngrok http 5000`
