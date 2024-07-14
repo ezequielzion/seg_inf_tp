@@ -5,6 +5,8 @@ import uuid
 import os
 from markupsafe import escape
 
+PORT = int(os.getenv('PORT', 5000))
+
 class MessageAnnouncer:
 
     def __init__(self):
@@ -36,7 +38,7 @@ def persistir_token(contenido: str) -> str:
 
 
 def generar_endpoint(id: str) -> str:
-    return f"http://localhost:5000/alert/{id}"
+    return f"http://localhost:{PORT}/alert/{id}"
 
 def generate_alert_with_uuid(id: str):
     print("generating alert", id)
@@ -110,5 +112,4 @@ def redirect_route():
     return response
 
 if __name__ == "__main__":
-	port = int(os.environ.get('PORT', 5000))
-	app.run(debug=False, host='0.0.0.0', port=port)
+	app.run(debug=False, host='0.0.0.0', port=PORT)

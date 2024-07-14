@@ -8,5 +8,5 @@ ngrok config add-authtoken $NGROK_AUTH_TOKEN
 # Start the backend server in the background
 python3 /app/src/backend.py &
 
-# Start ngrok
-ngrok http 5000
+# Start ngrok with env port variable
+ngrok http $PORT
