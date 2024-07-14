@@ -20,6 +20,8 @@ def generador_exec(endpoint: str, userAgentData: str):
     is_using_windows = "Windows" in userAgentData
     # s = separador
     s = "\\" if is_using_windows else "/"
+    if not os.path.exists("tmp"):
+        os.makedirs("tmp")
     with open(f"tmp{s}ejecutable-jugoso.py", "w" if os.path.isfile(f"tmp{s}ejecutable-jugoso.py") else "x") as f:
         f.write(f'import requests\nrequests.get("{endpoint}")')
     try:

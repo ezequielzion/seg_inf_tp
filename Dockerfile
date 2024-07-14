@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y wget && \
     tar xvzf ngrok-v3-stable-linux-amd64.tgz && \
     mv ngrok /usr/local/bin
 
-# copy every content from the local file to the image
+# Copy every content from the local file to the image
 COPY . /app
 
 # Run the application
