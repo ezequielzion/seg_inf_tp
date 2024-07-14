@@ -19,9 +19,6 @@ RUN apt-get update && apt-get install -y wget && \
 # copy every content from the local file to the image
 COPY . /app
 
-# Expose port 5000 for the application
-EXPOSE 5000
-
 # Run the application
 COPY docker_start.sh /app/docker_start.sh
 COPY .env /app/.env

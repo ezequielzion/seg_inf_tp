@@ -4,7 +4,9 @@ from generadores import generadores
 import uuid
 import os
 from markupsafe import escape
+from dotenv import load_dotenv
 
+load_dotenv()
 PORT = int(os.getenv('PORT', 5000))
 
 class MessageAnnouncer:
