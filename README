@@ -1,4 +1,5 @@
 ## Para correr con Docker:
+
 1. Instalar [docker](https://www.docker.com/get-started/)
 2. Posicionarse en la carpeta `seg_inf_tp`
 3. Crear una cuenta en [ngrok](https://ngrok.com/) y conseguir un [auth token](https://dashboard.ngrok.com/tunnels/authtokens). Una vez obtenido, crear un archivo `.env` siguiendo el ejemplo de `.env.example` y setear `NGROK_AUTH_TOKEN` con el auth token
