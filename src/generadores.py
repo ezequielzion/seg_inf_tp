@@ -91,12 +91,13 @@ def get_ngrok_url():
     try:
         res = requests.get("http://localhost:4040/api/tunnels")
         res_dict = res.json()
-        return res_dict['tunnels'][0]['public_url']
+        ngrkok_url = res_dict['tunnels'][0]['public_url']
+        return ngrkok_url if ngrkok_url else None
     except:
         return None
 
 
-def generador_excel(endpoint: str):
+def generador_excel(endpoint: str, _):
     wb_nuevo = openpyxl.Workbook()
     sheet = wb_nuevo.active
     sheet.cell(column=1, row=1, value=f'=webservice("{endpoint}")')
@@ -106,7 +107,7 @@ def generador_excel(endpoint: str):
     writer.save()
     return excel_buffer.getvalue()
 
-def generador_word(endpoint: str):
+def generador_word(endpoint: str, _):
     document = Document()
     document.add_heading('Document Title', 0)
 
@@ -117,11 +118,11 @@ def generador_word(endpoint: str):
     document.save(word_buffer)
     return word_buffer.getvalue()
 
-def generador_qr(endpoint: str):
+def generador_qr(endpoint: str, _):
     ngrok_url = get_ngrok_url()
-    ngrok_url = ngrok_url if ngrok_url else endpoint
+    if not ngrok_url: return None
+
     exactas_url = 'https://campus.exactas.uba.ar/'
-    
     url = f"{ngrok_url}/redirect?final_url={exactas_url}&endpoint={endpoint}"
     qr = qrcode.QRCode(
         version=1,
@@ -137,7 +138,7 @@ def generador_qr(endpoint: str):
     png_buffer.seek(0)
     return png_buffer.getvalue()
 
-def generador_epub(endpoint: str):
+def generador_epub(endpoint: str, _):
     # Create a new ZIP file in memory
     epub_buffer = io.BytesIO()
     with zipfile.ZipFile(epub_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
